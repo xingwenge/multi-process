@@ -70,11 +70,10 @@ class Worker
 
         $this->process = new Process(function ($worker) use ($bin, $binArgs) {
             /** @var \Swoole\Process $worker */
-
             try {
                 $worker->exec($bin, $binArgs);
             }  catch (\Throwable $e) {
-                echo $e->getMessage(), PHP_EOL;
+                $this->logger->error('Process error', [$e->getMessage()]);
             }
         });
 
