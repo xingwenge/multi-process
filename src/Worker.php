@@ -16,7 +16,7 @@ class Worker
     private $binArgs;
 
     /** @var int 进程pid */
-    private $runPid;
+    private $pid;
 
     /** @var Process 进程对象 */
     private $process;
@@ -52,6 +52,13 @@ class Worker
         $this->binArgs = $binArgs;
     }
 
+    /**
+     * @return int
+     */
+    public function getPid(): int
+    {
+        return $this->pid;
+    }
 
     /**
      * 启动进程
