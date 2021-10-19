@@ -1,0 +1,21 @@
+{
+    "name": "xingwenge/multi-process",
+    "description": "Multi-process task manager.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "xingwenge",
+            "email": "470703808@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "monolog/monolog": "^2.0@beta"
+    },
+    "autoload": {
+        "psr-4": {
+            "xingwenge\\multiprocess\\": "src/"
+        }
+    }
+}
