@@ -83,7 +83,5 @@ class Worker
             'name' => $this->name,
             'Pid' => $this->pid,
         ]);
-
-        return $this->pid;
     }
 }
