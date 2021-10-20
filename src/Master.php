@@ -1,8 +1,6 @@
 <?php
 namespace xingwenge\multiprocess;
 
-use Monolog\Logger;
-
 class Master
 {
     private $logger;

@@ -3,28 +3,66 @@ namespace xingwenge\multiprocess;
 
 class Dispatcher
 {
-    public function run($opt)
+    private $logger;
+    private $master;
+
+    public function __construct(Logger $logger, Master $master)
     {
-        switch ($opt) {
+        $this->logger = $logger;
+        $this->master = $master;
+    }
+
+    /**
+     * @param $param
+     */
+    public function run($param)
+    {
+//        if (array_key_exists('h', $param)) {
+//            return $this->printHelpMsg();
+//        }
+
+        if (isset($param['s'])) {
+            switch ($param['s']) {
+                case 'start':
+                    return $this->master->startAll();
+            }
+        }
+
+
+
+        /*switch ($opt) {
             case 'start':
-                (new Master())->startAll();
+//                (new Master())->startAll();
                 break;
             case 'stop':
-                (new Master())->stopAll(SIGTERM);
+//                (new Master())->stopAll(SIGTERM);
                 break;
-//            case 'stop':
-//                (new Sun())->stop(SIGTERM);
-//                break;
             case 'help':
             default:
                 $this->printHelpMsg();
                 break;
-        }
+        }*/
     }
 
     private function printHelpMsg()
     {
         $msg=<<<EOF
+Usage: php /usr/bin/supervisord [options]
+
+Options:
+    -c 
+    configuration yaml file.
+    
+    -h 
+    Show this help, or workflow help for command.
+
+    -s start 
+    Start multi-process master and workers.
+
+
+
+
+
 NAME
       php multi-process - manage multi-process.
 

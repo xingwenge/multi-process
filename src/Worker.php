@@ -1,7 +1,6 @@
 <?php
 namespace xingwenge\multiprocess;
 
-use Monolog\Logger;
 use Swoole\Process;
 
 class Worker
