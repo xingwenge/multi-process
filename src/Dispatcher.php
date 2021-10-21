@@ -2,12 +2,8 @@
 namespace xingwenge\multiprocess;
 
 use DI\Annotation\Inject;
-use xingwenge\multiprocess\Common\ConfigReader;
-use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Common\Logger;
 use xingwenge\multiprocess\Core\Master;
-use xingwenge\multiprocess\Core\Worker;
-use xingwenge\multiprocess\Core\WorkerList;
 
 class Dispatcher
 {
@@ -24,14 +20,8 @@ class Dispatcher
     private $master;
 
     /**
-     * @Inject
-     * @var WorkerList
-     */
-    private $workerList;
-
-    /**
      * @param $param
-     * @return void
+     * @throws \Exception
      */
     public function run($param)
     {
@@ -40,14 +30,15 @@ class Dispatcher
 //        }
 
         if (isset($param['h'])) {
-            return $this->printHelpMsg();
+            $this->printHelpMsg();
+            return;
         }
 
         if (isset($param['s'])) {
             switch ($param['s']) {
                 case 'start':
-                    $this->initWorkerList();
-                    return $this->master->startWorkerList($this->workerList);
+                    $this->master->startAll(__DIR__. '/../Demo/process.yaml');
+                    return;
             }
         }
 
@@ -75,8 +66,8 @@ class Dispatcher
 Usage: php multi-process.php [options]
 
 Options:
-    -c 
-    configuration yaml file.
+//    -c 
+//    configuration yaml file.
     
     -h 
     Show this help, or workflow help for command.
@@ -117,25 +108,5 @@ WORKFLOWS
 
 EOF;
         echo $msg;
-    }
-
-    /**
-     * @throws \Exception
-     */
-    private function initWorkerList()
-    {
-        $file = __DIR__. '/../Demo/process.yaml';
-
-        $config = Container::get()->get(ConfigReader::class)->getSettingsByYaml($file);
-        foreach ($config['programs'] as $k=>$v) {
-            $worker = new Worker();
-            $worker->setName($k);
-            $worker->setBin($v['bin']??'');
-            $worker->setBinArgs($v['binArgs']??[]);
-            $worker->setLogger($this->logger);
-            $this->workerList->addWorker($worker);
-        }
-
-        $this->workerList->checkWorkerList();
     }
 }

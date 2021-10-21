@@ -6,7 +6,12 @@ use Noodlehaus\Parser\Yaml;
 
 class ConfigReader
 {
-    public function getSettingsByYaml($settingsYaml)
+    /**
+     * @param string $settingsYaml
+     * @return Config
+     * @throws \Exception
+     */
+    public function getSettingsByYaml(string $settingsYaml)
     {
         if (!file_exists($settingsYaml)) {
             throw new \Exception('The yaml file not exist. %s', $settingsYaml);
