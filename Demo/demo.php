@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__. '/../vendor/autoload.php';
 
-use xingwenge\multiprocess\Container;
+use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Dispatcher;
 
 // php7 Demo/demo.php -h

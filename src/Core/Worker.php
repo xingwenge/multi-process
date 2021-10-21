@@ -1,7 +1,9 @@
 <?php
-namespace xingwenge\multiprocess;
+namespace xingwenge\multiprocess\Core;
 
+use DI\Annotation\Inject;
 use Swoole\Process;
+use xingwenge\multiprocess\Common\Logger;
 
 class Worker
 {
@@ -20,12 +22,10 @@ class Worker
     /** @var Process 进程对象 */
     private $process;
 
+    /**
+     * @var Logger
+     */
     private $logger;
-
-    public function __construct(Logger $logger)
-    {
-        $this->logger = $logger;
-    }
 
     /**
      * @param string $name
@@ -49,6 +49,38 @@ class Worker
     public function setBinArgs(array $binArgs)
     {
         $this->binArgs = $binArgs;
+    }
+
+    /**
+     * @param Logger $logger
+     */
+    public function setLogger(Logger $logger): void
+    {
+        $this->logger = $logger;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getBin(): string
+    {
+        return $this->bin;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBinArgs(): array
+    {
+        return $this->binArgs;
     }
 
     /**

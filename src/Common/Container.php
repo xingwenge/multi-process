@@ -1,8 +1,7 @@
 <?php
-namespace xingwenge\multiprocess;
+namespace xingwenge\multiprocess\Common;
 
 use DI\ContainerBuilder;
-use Psr\Container\ContainerInterface;
 
 class Container
 {

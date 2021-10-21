@@ -1,19 +1,37 @@
 <?php
 namespace xingwenge\multiprocess;
 
+use DI\Annotation\Inject;
+use xingwenge\multiprocess\Common\ConfigReader;
+use xingwenge\multiprocess\Common\Container;
+use xingwenge\multiprocess\Common\Logger;
+use xingwenge\multiprocess\Core\Master;
+use xingwenge\multiprocess\Core\Worker;
+use xingwenge\multiprocess\Core\WorkerList;
+
 class Dispatcher
 {
+    /**
+     * @Inject
+     * @var Logger
+     */
     private $logger;
+
+    /**
+     * @Inject
+     * @var Master
+     */
     private $master;
 
-    public function __construct(Logger $logger, Master $master)
-    {
-        $this->logger = $logger;
-        $this->master = $master;
-    }
+    /**
+     * @Inject
+     * @var WorkerList
+     */
+    private $workerList;
 
     /**
      * @param $param
+     * @return void
      */
     public function run($param)
     {
@@ -21,12 +39,19 @@ class Dispatcher
 //            return $this->printHelpMsg();
 //        }
 
+        if (isset($param['h'])) {
+            return $this->printHelpMsg();
+        }
+
         if (isset($param['s'])) {
             switch ($param['s']) {
                 case 'start':
-                    return $this->master->startAll();
+                    $this->initWorkerList();
+                    return $this->master->startWorkerList($this->workerList);
             }
         }
+
+
 
 
 
@@ -47,7 +72,7 @@ class Dispatcher
     private function printHelpMsg()
     {
         $msg=<<<EOF
-Usage: php /usr/bin/supervisord [options]
+Usage: php multi-process.php [options]
 
 Options:
     -c 
@@ -92,5 +117,25 @@ WORKFLOWS
 
 EOF;
         echo $msg;
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function initWorkerList()
+    {
+        $file = __DIR__. '/../Demo/process.yaml';
+
+        $config = Container::get()->get(ConfigReader::class)->getSettingsByYaml($file);
+        foreach ($config['programs'] as $k=>$v) {
+            $worker = new Worker();
+            $worker->setName($k);
+            $worker->setBin($v['bin']??'');
+            $worker->setBinArgs($v['binArgs']??[]);
+            $worker->setLogger($this->logger);
+            $this->workerList->addWorker($worker);
+        }
+
+        $this->workerList->checkWorkerList();
     }
 }

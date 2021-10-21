@@ -1,6 +1,8 @@
 programs:
   demo:
-    bin: /usr/local/php-5.4.33/bin/php
-    binArgs: /home/www/b2s/Html/b2s.php Task/mqConsume cls=App\\B2s\\Model\\Common\\UserActiveConsume
+    bin: /usr/local/php7/bin/php
+    binArgs:
+      - /data/www/overseas_online/src/Console/console.php
+      - App\Console\Firehose\Demo
     autostart: true
     autorestart: true

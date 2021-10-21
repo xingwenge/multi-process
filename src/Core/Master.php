@@ -1,23 +1,31 @@
 <?php
-namespace xingwenge\multiprocess;
+namespace xingwenge\multiprocess\Core;
+
+use DI\Annotation\Inject;
+use xingwenge\multiprocess\Common\Logger;
 
 class Master
 {
+    /**
+     * @Inject
+     * @var Logger
+     */
     private $logger;
-    private $workerList;
 
-    public function __construct(Logger $logger)
-    {
-        $this->logger = $logger;
-        $this->workerList = new WorkerList();
-    }
+    /**
+     * @Inject
+     * @var WorkerList
+     */
+    private $workerList;
 
     /**
      * 启动所有worker
      */
-    public function startAll()
+    public function startWorkerList(WorkerList $workerList)
     {
-
+        foreach ($this->workerList->getWorkList() as $worker) {
+            $worker->start();
+        }
     }
 
     /**
@@ -35,7 +43,7 @@ class Master
 
     private function startWorker($name, $bin, $binArgs)
     {
-        $worker = new Worker($this->logger);
+        $worker = new Worker();
         $worker->setName($name);
         $worker->setBin($bin);
         $worker->setBinArgs($binArgs);

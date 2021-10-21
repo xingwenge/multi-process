@@ -1,5 +1,5 @@
 <?php
-namespace xingwenge\multiprocess;
+namespace xingwenge\multiprocess\Common;
 
 class Logger extends \Monolog\Logger
 {
