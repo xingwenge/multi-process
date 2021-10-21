@@ -37,7 +37,7 @@ class Dispatcher
         if (isset($param['s'])) {
             switch ($param['s']) {
                 case 'start':
-                    $this->master->startAll(__DIR__. '/../Demo/process.yaml');
+                    $this->master->startAll();
                     return;
             }
         }

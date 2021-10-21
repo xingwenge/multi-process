@@ -111,8 +111,8 @@ class Worker
         $this->pid = $this->process->start();
 
         $this->logger->info('Process start', [
+            'pid' => $this->pid,
             'name' => $this->name,
-            'Pid' => $this->pid,
         ]);
     }
 }

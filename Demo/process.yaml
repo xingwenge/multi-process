@@ -1,5 +1,6 @@
 #[program:theprogramname]
-#run_file=/a/path        ; stdout log path, NONE for none; default AUTO
+settings:
+  workDir: /logs/multi-process
 
 programs:
   demo:

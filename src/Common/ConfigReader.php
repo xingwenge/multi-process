@@ -7,16 +7,31 @@ use Noodlehaus\Parser\Yaml;
 class ConfigReader
 {
     /**
-     * @param string $settingsYaml
-     * @return Config
-     * @throws \Exception
+     * @var Config
      */
-    public function getSettingsByYaml(string $settingsYaml)
-    {
-        if (!file_exists($settingsYaml)) {
-            throw new \Exception('The yaml file not exist. %s', $settingsYaml);
-        }
+    private $config;
 
-        return new Config(file_get_contents($settingsYaml), new Yaml(), true);
+    public function __construct()
+    {
+        $file = __DIR__. '/../../Demo/process.yaml';
+
+        $config = new Config(file_get_contents($file), new Yaml(), true);
+        $this->config = $config;
     }
+
+    public function getPrograms()
+    {
+        return $this->config->get('programs');
+    }
+
+    /**
+     * @param $key
+     *  workDir 运行目录
+     * @return array | string | null
+     */
+    public function getSetting($key)
+    {
+        return $this->config->get('settings')[$key] ?? null;
+    }
+
 }
