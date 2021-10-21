@@ -1,12 +1,16 @@
 <?php
 namespace xingwenge\multiprocess\Common;
 
+use Monolog\Handler\StreamHandler;
+
 class Logger extends \Monolog\Logger
 {
     public function __construct()
     {
         parent::__construct('multi-process', [
-            new \Monolog\Handler\StreamHandler('/logs/run.log')
+            new StreamHandler('php://stdout'),
+            new StreamHandler('/logs/run.log'),
+
         ], [], null);
     }
 }

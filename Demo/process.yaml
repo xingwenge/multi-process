@@ -1,3 +1,6 @@
+#[program:theprogramname]
+#run_file=/a/path        ; stdout log path, NONE for none; default AUTO
+
 programs:
   demo:
     bin: /usr/local/php7/bin/php
