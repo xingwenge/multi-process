@@ -131,12 +131,8 @@ class Master
             try {
                 $ret = Process::wait(false); // {pid:123,code:0,signal:0} | false
 
-                if (!$ret) {
-                    break;
-                }
-
-                if (isset($ret['pid'])) {
-                    $logger->info('Worker stop', $ret);
+                if ($ret && isset($ret['pid'])) {
+                    $logger->info('Worker exist', $ret);
 
                     if ($ret['code']==0 && $ret['signal']==0) {
                         $worker = $workerList->getWorkerByPid($ret['pid']);
