@@ -1,4 +1,3 @@
-#[program:theprogramname]
 settings:
   workDir: /logs/multi-process
 
@@ -8,5 +7,10 @@ programs:
     binArgs:
       - /data/www/overseas_online/src/Console/console.php
       - App\Console\Firehose\Demo
-    autostart: true
-    autorestart: true
+#    autostart: true
+#    autorestart: true
+  CustomChange:
+    bin: /usr/local/php7/bin/php
+    binArgs:
+      - /data/www/overseas_online/src/Console/console.php
+      - App\Console\Firehose\CustomChange

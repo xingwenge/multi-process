@@ -76,8 +76,6 @@ class Master
             'pid' => $this->masterPid,
         ]);
 
-
-
         # deal worker exist.
         Process::signal(SIGCHLD, function(){
             self::dealWorkerExist();
@@ -114,14 +112,23 @@ class Master
     }
 
     /**
+     * The process is exist.
      * @param $pid
      * @return bool
      */
-    private static function processIsExist($pid)
+    private static function processIsExist($pid): bool
     {
-        return @Process::kill($pid, 0);
+        if (@Process::kill($pid, 0)) {
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
+    /**
+     * deal worker exist
+     */
     private static function dealWorkerExist()
     {
         $logger = Container::instance()->get(Logger::class);
