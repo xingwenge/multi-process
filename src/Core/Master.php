@@ -31,9 +31,6 @@ class Master
      */
     private $workDir;
 
-    /**
-     * @var int 主进程id
-     */
     private $masterPid;
 
     public function __construct(ConfigReader $config)
@@ -56,37 +53,33 @@ class Master
     public function startAll()
     {
         # master run check.
-        $masterPidFile = $this->getMasterPidFile();
-        if (file_exists($masterPidFile)) {
-            $masterPid = file_get_contents($masterPidFile);
-
-            if ($masterPid && self::processIsExist($masterPid)) {
-                throw new \Exception(sprintf('[Pid: %s] Master is running. Please stop or restart.', $masterPid));
-            }
+        $masterPid = $this->getMasterPid();
+        if ($masterPid && self::processIsExist($masterPid)) {
+            throw new \Exception(sprintf('[Pid: %s] Master is running. Please stop or restart.', $masterPid));
         }
+
 
         # run as daemon.
         \Swoole\Process::daemon();
 
+
         # save master pid.
         $this->masterPid = getmypid();
-        file_put_contents($masterPidFile , $this->masterPid);
+        $this->setMasterPid($this->masterPid);
 
+
+        # logger.
         $this->logger->info('Master start.', [
             'pid' => $this->masterPid,
         ]);
 
-        # deal worker exist.
-        Process::signal(SIGCHLD, function(){
-            self::dealWorkerExist();
-        });
 
-
+        # register signal trigger.
+        MasterSignal::registerTrigger();
 
 
         # worker list.
         $config = $this->config->getPrograms();
-
         foreach ($config as $k=>$v) {
             $worker = new Worker();
             $worker->setName($k);
@@ -95,8 +88,8 @@ class Master
             $worker->setLogger($this->logger);
             $this->workerList->addWorker($worker);
         }
-
         $this->workerList->checkWorkerList();
+
 
         # start worker.
         foreach ($this->workerList->getWorkList() as $worker) {
@@ -104,9 +97,53 @@ class Master
         }
     }
 
-    private function getMasterPidFile()
+    public function stopAll()
     {
-        return $this->workDir . '/master.pid';
+        $masterPid = $this->getMasterPid();
+
+        if ($masterPid) {
+            if (Process::kill($masterPid, SIGTERM)) {
+                $this->logger->info('Send signal to Master', ['pid' => $masterPid, 'signal' => SIGTERM]);
+                return;
+            }
+            else {
+                $this->logger->error('Send signal to Master failure!', ['pid' => $masterPid, 'signal' => SIGTERM]);
+            }
+        }
+        else {
+            $this->logger->warning('Master is not running');
+        }
+    }
+
+    public function stopWorkers()
+    {
+        foreach ($this->workerList->getWorkList() as $worker) {
+            $workerPid = $worker->getPid();
+
+            if ($workerPid && self::processIsExist($workerPid)) {
+                if (true == Process::kill($workerPid)) {
+                    $this->logger->info('Worker stopped', ['pid' => $workerPid, 'name' => $worker->getName()]);
+                }
+                else {
+                    $this->logger->info('Worker stop failure!', ['pid' => $workerPid, 'name' => $worker->getName()]);
+                }
+            }
+        }
+    }
+
+    public function stopMaster()
+    {
+        $masterPid = $this->getMasterPid();
+
+        if (true == Process::kill($masterPid)) {
+            @unlink($this->getMasterPidFile());
+
+            $this->logger->info('Master stopped', ['pid' => $masterPid]);
+        } else {
+            $this->logger->info('Master stop failure!', ['pid' => $masterPid]);
+        }
+
+        exit();
     }
 
     /**
@@ -124,34 +161,27 @@ class Master
         }
     }
 
-    /**
-     * deal worker exist
-     */
-    private static function dealWorkerExist()
+    private function getMasterPidFile()
     {
-        $logger = Container::instance()->get(Logger::class);
-        $workerList = Container::instance()->get(WorkerList::class);
+        return $this->workDir . '/master.pid';
+    }
 
-        while (true) {
-            try {
-                # wait worker signal
-                $ret = Process::wait(false); // {pid:123,code:0,signal:0} | false
-
-                if ($ret && isset($ret['pid'])) {
-                    $logger->info('Worker exist', $ret);
-
-                    if ($ret['code']==0 && $ret['signal']==0) {
-                        $worker = $workerList->getWorkerByPid($ret['pid']);
-                        if ($worker) {
-                            $worker->start();
-                        }
-                    }
-                }
-            } catch (\Exception $e) {
-                $logger->error('Deal worker exist error.', [$e->getMessage()]);
+    private function getMasterPid()
+    {
+        if (!$this->masterPid) {
+            $masterPidFile = $this->getMasterPidFile();
+            if (file_exists($masterPidFile)) {
+                $this->masterPid = intval(file_get_contents($masterPidFile));
             }
+        }
 
-            break;
+        return $this->masterPid;
+    }
+
+    private function setMasterPid($masterPid)
+    {
+        if ($masterPid) {
+            file_put_contents($this->getMasterPidFile(), $masterPid);
         }
     }
 }
