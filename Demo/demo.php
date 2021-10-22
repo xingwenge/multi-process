@@ -14,7 +14,7 @@ try {
 
 //    print_r($param);exit;
 
-    $dispatcher = Container::get()->get(Dispatcher::class);
+    $dispatcher = Container::instance()->get(Dispatcher::class);
     $dispatcher->run($param);
 } catch (\Exception $e) {
     echo $e->getMessage(), PHP_EOL;

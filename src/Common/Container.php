@@ -9,7 +9,7 @@ class Container
      * 获取容器
      * @return \DI\Container
      */
-    public static function get()
+    public static function instance()
     {
         static $container;
 

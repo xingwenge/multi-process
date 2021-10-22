@@ -9,6 +9,11 @@ class WorkerList
     private $workList = [];
 
     /**
+     * @var array {pid:worker}
+     */
+    private $mapPid = [];
+
+    /**
      * @return Worker[]
      */
     public function getWorkList(): array
@@ -23,8 +28,8 @@ class WorkerList
 
     public function addWorker(Worker $worker)
     {
-        $this->workList[] = $worker;
-//        $this->pidList[$worker->getPid()] = $worker;
+        $key = md5($worker->getName());
+        $this->workList[$key] = $worker;
     }
 
     public function checkWorkerList()
@@ -42,8 +47,20 @@ class WorkerList
         }
     }
 
-    /*public function getWorkerByPid($pid)
+    public function updateWorkerPid(Worker $worker)
     {
-        return isset($this->pidList[$pid])? $this->pidList[$pid]: null;
-    }*/
+        $key = md5($worker->getName());
+        $this->mapPid[$worker->getPid()] = $key;
+    }
+
+    public function getWorkerByPid($pid)
+    {
+        if (isset($this->mapPid[$pid])) {
+            if (isset($this->workList[$this->mapPid[$pid]])) {
+                return $this->workList[$this->mapPid[$pid]];
+            }
+        }
+
+        return null;
+    }
 }

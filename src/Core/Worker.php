@@ -1,9 +1,10 @@
 <?php
 namespace xingwenge\multiprocess\Core;
 
-use DI\Annotation\Inject;
 use Swoole\Process;
+use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Common\Logger;
+use function DI\get;
 
 class Worker
 {
@@ -110,7 +111,10 @@ class Worker
 
         $this->pid = $this->process->start();
 
-        $this->logger->info('Process start', [
+        $workerList = Container::instance()->get(WorkerList::class);
+        $workerList->updateWorkerPid($this);
+
+        $this->logger->info('Worker start', [
             'pid' => $this->pid,
             'name' => $this->name,
         ]);

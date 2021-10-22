@@ -2,6 +2,7 @@
 namespace xingwenge\multiprocess\Core;
 
 use DI\Annotation\Inject;
+use Swoole\Process;
 use xingwenge\multiprocess\Common\ConfigReader;
 use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Common\Logger;
@@ -59,7 +60,7 @@ class Master
         if (file_exists($masterPidFile)) {
             $masterPid = file_get_contents($masterPidFile);
 
-            if ($masterPid && $this->processIsExist($masterPid)) {
+            if ($masterPid && self::processIsExist($masterPid)) {
                 throw new \Exception(sprintf('[Pid: %s] Master is running. Please stop or restart.', $masterPid));
             }
         }
@@ -75,11 +76,15 @@ class Master
             'pid' => $this->masterPid,
         ]);
 
+
+
+        # deal worker exist.
+        Process::signal(SIGCHLD, function(){
+            self::dealWorkerExist();
+        });
+
+
         # todo: signal
-
-
-
-
 
 
 
@@ -112,8 +117,39 @@ class Master
      * @param $pid
      * @return bool
      */
-    private function processIsExist($pid)
+    private static function processIsExist($pid)
     {
-        return @\Swoole\Process::kill($pid, 0);
+        return @Process::kill($pid, 0);
+    }
+
+    private static function dealWorkerExist()
+    {
+        $logger = Container::instance()->get(Logger::class);
+        $workerList = Container::instance()->get(WorkerList::class);
+
+        while (true) {
+            try {
+                $ret = Process::wait(false); // {pid:123,code:0,signal:0} | false
+
+                if (!$ret) {
+                    break;
+                }
+
+                if (isset($ret['pid'])) {
+                    $logger->info('Worker stop', $ret);
+
+                    if ($ret['code']==0 && $ret['signal']==0) {
+                        $worker = $workerList->getWorkerByPid($ret['pid']);
+                        if ($worker) {
+                            $worker->start();
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                $logger->error('Deal worker exist error.', [$e->getMessage()]);
+            }
+
+            break;
+        }
     }
 }
