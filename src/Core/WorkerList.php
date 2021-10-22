@@ -47,7 +47,7 @@ class WorkerList
         }
     }
 
-    public function updateWorkerPid(Worker $worker)
+    public function updateWorker(Worker $worker)
     {
         $key = md5($worker->getName());
         $this->mapPid[$worker->getPid()] = $key;

@@ -111,8 +111,7 @@ class Worker
 
         $this->pid = $this->process->start();
 
-        $workerList = Container::instance()->get(WorkerList::class);
-        $workerList->updateWorkerPid($this);
+        Container::instance()->get(WorkerList::class)->updateWorker($this);
 
         $this->logger->info('Worker start', [
             'pid' => $this->pid,

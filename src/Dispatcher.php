@@ -39,8 +39,12 @@ class Dispatcher
                 case 'start':
                     $this->master->startAll();
                     return;
+                case 'stop':
+                    return;
             }
         }
+
+        $this->master->startAll();
 
 
 

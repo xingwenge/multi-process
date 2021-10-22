@@ -82,8 +82,6 @@ class Master
         });
 
 
-        # todo: signal
-
 
 
         # worker list.
@@ -136,6 +134,7 @@ class Master
 
         while (true) {
             try {
+                # wait worker signal
                 $ret = Process::wait(false); // {pid:123,code:0,signal:0} | false
 
                 if ($ret && isset($ret['pid'])) {
