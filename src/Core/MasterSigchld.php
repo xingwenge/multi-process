@@ -20,7 +20,7 @@ class MasterSigchld extends MasterSignalBase
     private $workerList;
 
     /**
-     * deal worker exist. when child process stop or exit, parent process will get.
+     * deal worker exit. when child process stop or exit, parent process will get.
      */
     public function deal()
     {
@@ -30,7 +30,7 @@ class MasterSigchld extends MasterSignalBase
                 $ret = Process::wait(false); // {pid:123,code:0,signal:0} | false
 
                 if ($ret && isset($ret['pid'])) {
-                    $this->logger->info('Worker exist', $ret);
+                    $this->logger->info('Worker exit', $ret);
 
                     if ($ret['code']==0 && $ret['signal']==0) {
                         $worker = $this->workerList->getWorkerByPid($ret['pid']);
@@ -40,7 +40,7 @@ class MasterSigchld extends MasterSignalBase
                     }
                 }
             } catch (\Exception $e) {
-                $this->logger->error('Deal worker exist error.', [$e->getMessage()]);
+                $this->logger->error('Deal worker exit error.', [$e->getMessage()]);
             }
 
             break;
