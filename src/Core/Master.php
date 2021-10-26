@@ -4,7 +4,6 @@ namespace xingwenge\multiprocess\Core;
 use DI\Annotation\Inject;
 use Swoole\Process;
 use xingwenge\multiprocess\Common\ConfigReader;
-use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Common\Logger;
 
 class Master
@@ -50,7 +49,7 @@ class Master
      * @param string $yamlFile
      * @throws \Exception
      */
-    public function startAll()
+    public function start()
     {
         # master run check.
         $masterPid = $this->getMasterPid();
@@ -74,8 +73,8 @@ class Master
         ]);
 
 
-        # register signal trigger.
-        MasterSignal::registerTrigger();
+        # hunter master signal.
+        MasterSignalHunter::register();
 
 
         # worker list.
@@ -97,17 +96,16 @@ class Master
         }
     }
 
-    public function stopAll()
+    public function exitBySignal($signal)
     {
         $masterPid = $this->getMasterPid();
 
         if ($masterPid) {
-            if (Process::kill($masterPid, SIGTERM)) {
-                $this->logger->info('Send signal to Master', ['pid' => $masterPid, 'signal' => SIGTERM]);
-                return;
+            if (Process::kill($masterPid, $signal)) {
+                $this->logger->info('Send signal to Master', ['pid' => $masterPid, 'signal' => $signal]);
             }
             else {
-                $this->logger->error('Send signal to Master failure!', ['pid' => $masterPid, 'signal' => SIGTERM]);
+                $this->logger->error('Send signal to Master failure!', ['pid' => $masterPid, 'signal' => $signal]);
             }
         }
         else {
@@ -144,6 +142,21 @@ class Master
         }
 
         exit();
+    }
+
+    public function quitWorkers()
+    {
+        foreach ($this->workerList->getWorkList() as $worker) {
+            if ($workerPid = $worker->getPid()) {
+                $signal = SIGQUIT;
+                if (Process::kill($workerPid, $signal)) {
+                    $this->logger->info('Send signal to Worker', ['pid' => $workerPid, 'signal' => $signal]);
+                }
+                else {
+                    $this->logger->error('Send signal to Worker failure!', ['pid' => $workerPid, 'signal' => $signal]);
+                }
+            }
+        }
     }
 
     /**

@@ -33,32 +33,19 @@ class Dispatcher
         if (isset($param['s'])) {
             switch ($param['s']) {
                 case 'start':
-                    $this->master->startAll();
+                    $this->master->start();
                     return;
                 case 'stop':
-                    $this->master->stopAll();
+                    $this->master->exitBySignal(SIGTERM);
+                    return;
+                case 'quit':
+                    $this->master->exitBySignal(SIGUSR1);
                     return;
             }
         }
 
-        $this->master->startAll();
-
-
-
-
-
-        /*switch ($opt) {
-            case 'start':
-//                (new Master())->startAll();
-                break;
-            case 'stop':
-//                (new Master())->stopAll(SIGTERM);
-                break;
-            case 'help':
-            default:
-                $this->printHelpMsg();
-                break;
-        }*/
+        # default.
+        $this->master->start();
     }
 
     private function printHelpMsg()
@@ -81,7 +68,7 @@ Options:
      Stop is a quick shutdown master and workers.
     
     -s quit
-     Quit is a graceful shutdown. Multi-process send signal to worker and wait stop.
+     Quit is a graceful shutdown. The master send signal to worker and wait stop.
 
 
 EOF;

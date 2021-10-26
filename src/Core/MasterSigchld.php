@@ -5,7 +5,10 @@ use DI\Annotation\Inject;
 use Swoole\Process;
 use xingwenge\multiprocess\Common\Logger;
 
-class MasterSigchld extends MasterSignalBase
+/**
+ * deal worker exit. when worker process stop or exit, parent master process will get.
+ */
+class MasterSigchld
 {
     /**
      * @Inject
@@ -19,15 +22,15 @@ class MasterSigchld extends MasterSignalBase
      */
     private $workerList;
 
-    /**
-     * deal worker exit. when child process stop or exit, parent process will get.
-     */
     public function deal()
     {
         while (true) {
             try {
                 # wait worker signal
-                $ret = Process::wait(false); // {pid:123,code:0,signal:0} | false
+                $ret = Process::wait(false);
+                // {pid:123,code:0,signal:0}
+                // false
+                // {"pid":298,"code":255,"signal":0} worker process program Fatal error.
 
                 if ($ret && isset($ret['pid'])) {
                     $this->logger->info('Worker exit', $ret);
