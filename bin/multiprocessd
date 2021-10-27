@@ -2,9 +2,12 @@
 <?php
 require_once __DIR__. '/../vendor/autoload.php';
 
+use Monolog\Formatter\LineFormatter;
+use Monolog\Handler\StreamHandler;
 use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Core\Master;
 use xingwenge\multiprocess\Common\ConfigReader;
+use xingwenge\multiprocess\Common\Logger;
 
 /**
  * @usage
@@ -15,16 +18,22 @@ try {
     $container = Container::instance();
 
     $param = getopt('c:');
-    $configFile = isset($param['c'])? $param['c']: 'config.yaml';
-
-    if (!file_exists($configFile)) {
-        throw new Exception('Can not find config file.');
-    }
 
     # config
-    $configReader = $container->get(ConfigReader::class);
-    $configReader->setConfigByYaml($configFile);
-    $configReader->checkConfig();
+    $configYamlFile = isset($param['c'])? $param['c']: './config.yaml';
+    $container->get(ConfigReader::class)
+        ->setConfigByYaml($configYamlFile)
+        ->checkConfig();
+
+    # logger
+    $logFormatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n", "Y-m-d H:i:s");
+    $container->get(Logger::class)
+        ->setName('multi-process')
+        ->setTimezone(new \DateTimeZone('Asia/Shanghai'))
+        ->setHandlers([
+            (new StreamHandler('php://stdout'))->setFormatter($logFormatter),
+            (new StreamHandler('/logs/run.log'))->setFormatter($logFormatter),
+        ]);
 
     # master
     $master = $container->get(Master::class);

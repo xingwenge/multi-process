@@ -23,17 +23,11 @@ try {
         return;
     }
 
-    # config.
-    $configFile = isset($param['c'])? $param['c']: 'config.yaml';
-
-    if (!file_exists($configFile)) {
-        throw new Exception('Can not find config file.');
-    }
-
     # config
-    $configReader = $container->get(ConfigReader::class);
-    $configReader->setConfigByYaml($configFile);
-    $configReader->checkConfig();
+    $configYamlFile = isset($param['c'])? $param['c']: './config.yaml';
+    $container->get(ConfigReader::class)
+        ->setConfigByYaml($configYamlFile)
+        ->checkConfig();
 
     # dispatch
     $container->get(Dispatcher::class)->run($param);

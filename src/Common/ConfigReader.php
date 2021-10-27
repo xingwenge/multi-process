@@ -11,10 +11,21 @@ class ConfigReader
      */
     private $config;
 
+    /**
+     * @param $file
+     * @return $this
+     * @throws \Exception
+     */
     public function setConfigByYaml($file)
     {
+        if (!file_exists($file)) {
+            throw new \Exception('Can not find config file. '. $file);
+        }
+
         $config = new Config(file_get_contents($file), new Yaml(), true);
         $this->config = $config;
+
+        return $this;
     }
 
     /**
@@ -29,6 +40,8 @@ class ConfigReader
         if (!isset($this->config['settings'])) {
             throw new \Exception('Config can not read error.');
         }
+
+        return $this;
     }
 
     public function getPrograms()
