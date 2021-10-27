@@ -24,6 +24,7 @@ try {
     # config
     $configReader = $container->get(ConfigReader::class);
     $configReader->setConfigByYaml($configFile);
+    $configReader->checkConfig();
 
     # master
     $master = $container->get(Master::class);

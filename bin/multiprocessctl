@@ -33,6 +33,7 @@ try {
     # config
     $configReader = $container->get(ConfigReader::class);
     $configReader->setConfigByYaml($configFile);
+    $configReader->checkConfig();
 
     # dispatch
     $container->get(Dispatcher::class)->run($param);

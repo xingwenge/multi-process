@@ -17,6 +17,20 @@ class ConfigReader
         $this->config = $config;
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function checkConfig()
+    {
+        if (!isset($this->config['programs'])) {
+            throw new \Exception('Config can not read programs.');
+        }
+
+        if (!isset($this->config['settings'])) {
+            throw new \Exception('Config can not read error.');
+        }
+    }
+
     public function getPrograms()
     {
         return $this->config->get('programs');
