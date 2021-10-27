@@ -15,9 +15,9 @@ use xingwenge\multiprocess\Common\Logger;
  */
 
 try {
-    $container = Container::instance();
-
     $param = getopt('c:');
+
+    $container = Container::instance();
 
     # config
     $configYamlFile = isset($param['c'])? $param['c']: './config.yaml';

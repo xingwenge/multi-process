@@ -28,25 +28,43 @@ class MasterSigchld
             try {
                 # wait worker signal
                 $ret = Process::wait(false);
-                // {pid:123,code:0,signal:0}
+                // {pid:123,code:0,signal:0}  exit normally.
                 // false
-                // {"pid":298,"code":255,"signal":0} worker process program Fatal error.
+                // {"pid":298,"code":255,"signal":0}  worker process program Fatal error.
 
-                if ($ret && isset($ret['pid'])) {
-                    $this->logger->info('Worker exit', $ret);
+                if ($ret) {
+                    $this->logger->info('Worker signal', $ret);
 
-                    if ($ret['code']==0 && $ret['signal']==0) {
-                        $worker = $this->workerList->getWorkerByPid($ret['pid']);
-                        if ($worker) {
-                            $worker->start();
+                    if (isset($ret['pid'])) {
+                        if ($ret['code']==0) {
+                            $this->startWorker($ret['pid']);
                         }
                     }
                 }
+
             } catch (\Exception $e) {
                 $this->logger->error('Deal worker exit error.', [$e->getMessage()]);
             }
 
             break;
+        }
+    }
+
+    private function startWorker($pid)
+    {
+        $worker = $this->workerList->getWorkerByPid($pid);
+
+        if (!$worker) {
+            return;
+        }
+
+        $timeDiff = microtime(true) - $worker->getStartTime();
+        if ($timeDiff < $worker->getStartSecs()) {
+            $worker->decrStartRetries();
+        }
+
+        if ($worker->getStartRetries()>0) {
+            $worker->start();
         }
     }
 }

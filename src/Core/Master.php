@@ -91,6 +91,8 @@ class Master
             $worker->setBin($v['bin']??'');
             $worker->setBinArgs($v['binArgs']??[]);
             $worker->setLogger($this->logger);
+            $worker->setStartSecs($v['startSecs']);
+            $worker->setStartRetries($v['startRetries']);
             $this->workerList->addWorker($worker);
         }
         $this->workerList->checkWorkerList();

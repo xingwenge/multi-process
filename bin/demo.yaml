@@ -7,10 +7,12 @@ programs:
     binArgs:
       - /data/www/overseas_online/src/Console/console.php
       - App\Console\Firehose\Demo
-#    autostart: true
-#    autorestart: true
+    startSecs: 3                        # of secs worker must stay up to be running
+    startRetries: 3                     # max of serial start failures when starting (default 3)
   CustomChange:
     bin: /usr/local/php7/bin/php
     binArgs:
       - /data/www/overseas_online/src/Console/console.php
       - App\Console\Firehose\CustomChange
+    startSecs: 3
+    startRetries: 3

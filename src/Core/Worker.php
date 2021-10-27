@@ -7,20 +7,31 @@ use xingwenge\multiprocess\Common\Logger;
 
 class Worker
 {
-    /** @var string 进程名称 */
+    /** @var string process name */
     private $name;
 
-    /** @var string 进程路径 */
+    /** @var string bin path */
     private $bin;
 
-    /** @var array 进程参数 */
+    /** @var array bin args */
     private $binArgs;
 
-    /** @var int 进程pid */
+    /** @var int process id */
     private $pid;
 
-    /** @var Process 进程对象 */
+    /** @var Process process obj */
     private $process;
+
+    /** @var int of secs worker must stay up to be running */
+    private $startSecs;
+
+    /** @var int max of serial start failures when starting */
+    private $startRetries;
+
+
+
+    /** @var float startTime */
+    private $startTime;
 
 //    private $status; // ready | running | stopped | error
 
@@ -62,6 +73,27 @@ class Worker
     }
 
     /**
+     * @param int $startSecs
+     */
+    public function setStartSecs(int $startSecs): void
+    {
+        $this->startSecs = $startSecs;
+    }
+
+    /**
+     * @param int $startRetries
+     */
+    public function setStartRetries(int $startRetries): void
+    {
+        $this->startRetries = $startRetries;
+    }
+
+    public function decrStartRetries()
+    {
+        $this->startRetries--;
+    }
+
+    /**
      * @return string
      */
     public function getName(): string
@@ -94,6 +126,30 @@ class Worker
     }
 
     /**
+     * @return int
+     */
+    public function getStartSecs(): int
+    {
+        return $this->startSecs;
+    }
+
+    /**
+     * @return int
+     */
+    public function getStartRetries(): int
+    {
+        return $this->startRetries;
+    }
+
+    /**
+     * @return float
+     */
+    public function getStartTime(): float
+    {
+        return $this->startTime;
+    }
+
+    /**
      * 启动进程
      */
     public function start()
@@ -111,6 +167,7 @@ class Worker
         });
 
         $this->pid = $this->process->start();
+        $this->startTime = microtime(true);
 
         Container::instance()->get(WorkerList::class)->updateWorker($this);
 
