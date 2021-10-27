@@ -8,20 +8,19 @@ class MasterSignalHunter
 {
     public static function register()
     {
+        # 子进程退出信号
         Process::signal(SIGCHLD, function(){
             Container::instance()->get(MasterSigchld::class)->deal();
         });
 
-        Process::signal(SIGTERM, function () {
-            Container::instance()->get(MasterSigTerm::class)->deal();
+        # 进程 quit
+        Process::signal(SIGUSR1, function () {
+            Container::instance()->get(MasterSigUsr1::class)->deal();
         });
 
-//        Process::signal(SIGQUIT, function () {
-//            Container::instance()->get(MasterSigQuit::class)->deal();
-//        });
-
-        Process::signal(SIGUSR1, function () {
-            Container::instance()->get(MasterSigQuit::class)->deal();
+        # 进程 stop
+        Process::signal(SIGUSR2, function () {
+            Container::instance()->get(MasterSigUsr2::class)->deal();
         });
     }
 }

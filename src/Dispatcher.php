@@ -35,11 +35,11 @@ class Dispatcher
                 case 'start':
                     $this->master->start();
                     return;
-                case 'stop':
-                    $this->master->exitBySignal(SIGTERM);
-                    return;
                 case 'quit':
                     $this->master->exitBySignal(SIGUSR1);
+                    return;
+                case 'stop':
+                    $this->master->exitBySignal(SIGUSR2);
                     return;
             }
         }

@@ -26,6 +26,12 @@ class Master
     private $workerList;
 
     /**
+     * @Inject
+     * @var Signal
+     */
+    private $signal;
+
+    /**
      * @var string 工作目录
      */
     private $workDir;
@@ -102,10 +108,10 @@ class Master
 
         if ($masterPid) {
             if (Process::kill($masterPid, $signal)) {
-                $this->logger->info('Send signal to Master', ['pid' => $masterPid, 'signal' => $signal]);
+                $this->logger->info('Send signal to Master', ['pid' => $masterPid, 'signal' => $this->signal->getShowName($signal)]);
             }
             else {
-                $this->logger->error('Send signal to Master failure!', ['pid' => $masterPid, 'signal' => $signal]);
+                $this->logger->error('Send signal to Master failure!', ['pid' => $masterPid, 'signal' => $this->signal->getShowName($signal)]);
             }
         }
         else {
@@ -113,47 +119,32 @@ class Master
         }
     }
 
-    public function stopWorkers()
-    {
-        foreach ($this->workerList->getWorkList() as $worker) {
-            $workerPid = $worker->getPid();
-
-            if ($workerPid && self::processIsExist($workerPid)) {
-                if (true == Process::kill($workerPid)) {
-                    $this->logger->info('Worker stopped', ['pid' => $workerPid, 'name' => $worker->getName()]);
-                }
-                else {
-                    $this->logger->info('Worker stop failure!', ['pid' => $workerPid, 'name' => $worker->getName()]);
-                }
-            }
-        }
-    }
-
-    public function stopMaster()
+    public function stopMaster($signal)
     {
         $masterPid = $this->getMasterPid();
 
-        if (true == Process::kill($masterPid)) {
+        if (true == Process::kill($masterPid, $signal)) {
             @unlink($this->getMasterPidFile());
 
-            $this->logger->info('Master stopped', ['pid' => $masterPid]);
+            $this->logger->info('Master deal signal', ['pid' => $masterPid, 'signal' => $this->signal->getShowName($signal)]);
         } else {
-            $this->logger->info('Master stop failure!', ['pid' => $masterPid]);
+            $this->logger->info('Master deal signal failure!', ['pid' => $masterPid, 'signal' => $this->signal->getShowName($signal)]);
         }
 
         exit();
     }
 
-    public function quitWorkers()
+    public function stopWorkers($signal)
     {
         foreach ($this->workerList->getWorkList() as $worker) {
-            if ($workerPid = $worker->getPid()) {
-                $signal = SIGQUIT;
-                if (Process::kill($workerPid, $signal)) {
-                    $this->logger->info('Send signal to Worker', ['pid' => $workerPid, 'signal' => $signal]);
+            $workerPid = $worker->getPid();
+
+            if ($workerPid && self::processIsExist($workerPid)) {
+                if (true == Process::kill($workerPid, $signal)) {
+                    $this->logger->info('Worker deal signal', ['pid' => $workerPid, 'name' => $worker->getName(), 'signal' => $this->signal->getShowName($signal)]);
                 }
                 else {
-                    $this->logger->error('Send signal to Worker failure!', ['pid' => $workerPid, 'signal' => $signal]);
+                    $this->logger->info('Worker deal signal failure!', ['pid' => $workerPid, 'name' => $worker->getName(), 'signal' => $this->signal->getShowName($signal)]);
                 }
             }
         }

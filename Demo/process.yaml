@@ -2,7 +2,7 @@ settings:
   workDir: /logs/multi-process
 
 programs:
-  demo:
+  Demo:
     bin: /usr/local/php7/bin/php
     binArgs:
       - /data/www/overseas_online/src/Console/console.php

@@ -4,9 +4,9 @@ namespace xingwenge\multiprocess\Core;
 use DI\Annotation\Inject;
 
 /**
- * deal worker stop. when master process get stop signal, shutdown all worker process.
+ * deal worker quit. when master process get quit, shutdown all worker process graceful.
  */
-class MasterSigTerm
+class MasterSigUsr1
 {
     /**
      * @Inject
@@ -17,9 +17,9 @@ class MasterSigTerm
     public function deal()
     {
         # stop worker.
-        $this->master->stopWorkers();
+        $this->master->stopWorkers(SIGTERM);
 
         # stop master.
-        $this->master->stopMaster();
+        $this->master->stopMaster(SIGTERM);
     }
 }
