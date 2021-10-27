@@ -11,10 +11,8 @@ class ConfigReader
      */
     private $config;
 
-    public function __construct()
+    public function setConfigByYaml($file)
     {
-        $file = __DIR__. '/../../Demo/process.yaml';
-
         $config = new Config(file_get_contents($file), new Yaml(), true);
         $this->config = $config;
     }

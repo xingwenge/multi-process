@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__. '/../vendor/autoload.php';
+
+use xingwenge\multiprocess\Common\Container;
+use xingwenge\multiprocess\Core\Master;
+use xingwenge\multiprocess\Common\ConfigReader;
+
+/**
+ * @usage
+ *  ./bin/multiprocessd -c ./bin/demo.yaml
+ */
+
+try {
+    $container = Container::instance();
+
+    $param = getopt('c:');
+    $configFile = isset($param['c'])? $param['c']: 'config.yaml';
+
+    if (!file_exists($configFile)) {
+        throw new Exception('Can not find config file.');
+    }
+
+    # config
+    $configReader = $container->get(ConfigReader::class);
+    $configReader->setConfigByYaml($configFile);
+
+    # master
+    $master = $container->get(Master::class);
+    $master->start();
+
+} catch (\Exception $e) {
+    echo $e->getMessage(), PHP_EOL;
+}

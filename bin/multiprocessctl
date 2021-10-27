@@ -1,0 +1,41 @@
+#!/usr/bin/env php
+<?php
+require_once __DIR__. '/../vendor/autoload.php';
+
+use xingwenge\multiprocess\Common\Container;
+use xingwenge\multiprocess\Dispatcher;
+use xingwenge\multiprocess\Common\ConfigReader;
+
+/**
+ * @usage
+ *  ./bin/multiprocessctl -h
+ * ./bin/multiprocessctl -c ./bin/demo.yaml -s
+ */
+
+try {
+    $param = getopt('c:s:h');
+
+    $container = Container::instance();
+
+    # help
+    if (isset($param['h'])) {
+        Dispatcher::printHelpMsg();
+        return;
+    }
+
+    # config.
+    $configFile = isset($param['c'])? $param['c']: 'config.yaml';
+
+    if (!file_exists($configFile)) {
+        throw new Exception('Can not find config file.');
+    }
+
+    # config
+    $configReader = $container->get(ConfigReader::class);
+    $configReader->setConfigByYaml($configFile);
+
+    # dispatch
+    $container->get(Dispatcher::class)->run($param);
+} catch (\Exception $e) {
+    echo $e->getMessage(), PHP_EOL;
+}

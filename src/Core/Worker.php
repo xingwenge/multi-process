@@ -4,7 +4,6 @@ namespace xingwenge\multiprocess\Core;
 use Swoole\Process;
 use xingwenge\multiprocess\Common\Container;
 use xingwenge\multiprocess\Common\Logger;
-use function DI\get;
 
 class Worker
 {
@@ -22,6 +21,8 @@ class Worker
 
     /** @var Process 进程对象 */
     private $process;
+
+//    private $status; // ready | running | stopped | error
 
     /**
      * @var Logger
