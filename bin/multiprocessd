@@ -29,11 +29,12 @@ try {
     $logFormatter = new LineFormatter("[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n", "Y-m-d H:i:s");
     $container->get(Logger::class)
         ->setName('multi-process')
-        ->setTimezone(new \DateTimeZone('Asia/Shanghai'))
         ->setHandlers([
             (new StreamHandler('php://stdout'))->setFormatter($logFormatter),
             (new StreamHandler('/logs/run.log'))->setFormatter($logFormatter),
-        ]);
+        ])
+        ->setTimezone(new \DateTimeZone('Asia/Shanghai'));
+
 
     # master
     $master = $container->get(Master::class);
