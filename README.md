@@ -12,8 +12,28 @@
 - 程序不当或者扩展带来的内存泄漏，长时间运行会导致内存溢出
 - php程序依赖的服务代码有更新，业务功能不能及时更新：程序做到自重启是一个有效的方法。 
 
-# 引入
-composer require xingwenge/multi-process
+# 引入使用
+```
+# git clone git@github.com:xingwenge/multi-process.git
+# cd multi-process
+# composer update
+# cd bin
+# php ./multiprocessd -c demo.yaml
+# php ./demo/redis-queue-push.php
+# php ./multiprocessctl -c demo.yaml -s stop
+```
+
+or
+
+```
+# composer require xingwenge/multi-process
+# mkdir multi-process && cd multi-process
+# cp -r ../vendor/xingwenge/multi-process/bin/* .
+# php ./multiprocessd -c demo.yaml
+# php ./demo/redis-queue-push.php
+# php ./multiprocessctl -c demo.yaml -s stop
+``` 
+
 
 # 依赖
 - swoole
