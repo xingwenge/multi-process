@@ -5,14 +5,6 @@ programs:
   Demo:
     bin: /usr/local/php7/bin/php
     binArgs:
-      - /data/www/overseas_online/src/Console/console.php
-      - App\Console\Firehose\Demo
-    startSecs: 3                        # of secs worker must stay up to be running
-    startRetries: 3                     # max of serial start failures when starting (default 3)
-  CustomChange:
-    bin: /usr/local/php7/bin/php
-    binArgs:
-      - /data/www/overseas_online/src/Console/console.php
-      - App\Console\Firehose\CustomChange
+      - /data/www/multiprocess//bin/demo/redis-queue-pop.php
     startSecs: 3
     startRetries: 3

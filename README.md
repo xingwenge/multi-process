@@ -47,3 +47,5 @@ programs:
 
 停止
 ```./bin/multiprocessctl -c ./bin/demo.yaml -s stop```
+
+![运行效果图](assets/effect.gif)
