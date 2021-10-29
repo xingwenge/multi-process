@@ -19,10 +19,10 @@
         "php": ">=7.1",
         "ext-swoole": ">=4.3.2",
         "monolog/monolog": "^2.0@beta",
-        "symfony/yaml": "3.4.x-dev",
-        "php-di/php-di": "6.0.x-dev",
-        "doctrine/annotations": "1.14.x-dev",
-        "hassankhan/config": "2.2.0"
+        "php-di/php-di": "^6.0.0",
+        "doctrine/annotations": "^1.11.0",
+        "hassankhan/config": "^2.0.0",
+        "symfony/yaml": "^v3.4.0"
     },
     "autoload": {
         "psr-4": {
