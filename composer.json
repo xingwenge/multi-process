@@ -1,6 +1,11 @@
 {
     "name": "xingwenge/multi-process",
     "description": "Multi-process task manager.",
+    "keywords": [
+        "multi process",
+        "多进程",
+        "swoole"
+    ],
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -11,6 +16,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
+        "php": ">=7.1",
+        "ext-swoole": ">=4.3.2",
         "monolog/monolog": "^2.0@beta",
         "hassankhan/config": "dev-develop",
         "symfony/yaml": "3.4.x-dev",
