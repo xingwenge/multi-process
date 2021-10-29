@@ -3,7 +3,7 @@ settings:
 
 programs:
   Demo:
-    bin: /usr/local/php/bin/php
+    bin: /usr/local/php7/bin/php
     binArgs:
       - /data/www/multiprocess//bin/demo/redis-queue-pop.php
     startSecs: 3

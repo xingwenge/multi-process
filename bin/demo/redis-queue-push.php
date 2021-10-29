@@ -1,7 +1,6 @@
 <?php
 $redis = new Redis();
-//$redis->connect('127.0.0.1', 6379);
-$redis->connect('51talk_redis', 6379);
+$redis->connect('172.18.0.4', 6379);
 echo "Connection to server successfully", PHP_EOL;
 
 $key = 'queue';
