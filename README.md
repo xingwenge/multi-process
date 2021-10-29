@@ -68,4 +68,6 @@ programs:
 推送redis队列消息
 ```php ./bin/demo/redis-queue-push.php```
 
+通过进程管理器创建的进程，阻塞拉取redis队列，并显示消息
+
 ![示例运行效果图](assets/effect.gif)
