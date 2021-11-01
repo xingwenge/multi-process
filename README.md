@@ -8,9 +8,11 @@
 ## php长进程存在的风险
 基于php实现的长进程脚本，大部分业务是基于I/O的消息阻塞。
 
-程序运行时存在一些隐患
+长时间运行的程序存在隐患
 - 程序不当或者扩展带来的内存泄漏，长时间运行会导致内存溢出
-- php程序依赖的服务代码有更新，业务功能不能及时更新：程序做到自重启是一个有效的方法。 
+- php程序依赖的服务代码有更新，业务功能不能及时更新
+  
+基于上述，程序能自重启是一个有效的解决方法。 
 
 # 引入使用
 ```
@@ -18,21 +20,37 @@
 # cd multi-process
 # composer update
 # cd bin
-# php ./multiprocessd -c demo.yaml
-# php ./demo/redis-queue-push.php
-# php ./multiprocessctl -c demo.yaml -s stop
 ```
 
 or
 
-```
+```php
 # composer require xingwenge/multi-process
 # mkdir multi-process && cd multi-process
 # cp -r ../vendor/xingwenge/multi-process/bin/* .
-# php ./multiprocessd -c demo.yaml
-# php ./demo/redis-queue-push.php
-# php ./multiprocessctl -c demo.yaml -s stop
 ``` 
+
+## 运行demo
+```php
+// 修改demo 进程任务. redis连接配置、队列名称
+# vi ./demo/redis-queue-pop.php          // redis 队列推送
+# vi ./demo/redis-queue-push.php         // redis I/O阻塞，队列拉取
+
+// 修改 config.yaml 配置文件，配置进程运行路径
+
+// 运行demo.
+# php ./multiprocessd -c config.yaml
+
+// 推送数据到队列
+# php ./demo/redis-queue-push.php
+
+// 平滑结束
+# php ./multiprocessctl -c config.yaml -s quit
+
+// 停止
+# php ./multiprocessctl -c config.yaml -s stop
+
+```
 
 
 # 依赖
@@ -40,7 +58,7 @@ or
 
 # 示例程序
 配置文件
-```./bin/demo.yaml```
+```./bin/config.yaml```
 
 ```php
 settings:
@@ -65,8 +83,7 @@ programs:
 停止
 ```./bin/multiprocessctl -c ./bin/demo.yaml -s stop```
 
-推送redis队列消息
-```php ./bin/demo/redis-queue-push.php```
+
 
 通过进程管理器创建的进程，阻塞拉取redis队列，并显示消息
 

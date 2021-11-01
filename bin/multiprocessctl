@@ -24,7 +24,7 @@ try {
     }
 
     # config
-    $configYamlFile = isset($param['c'])? $param['c']: './config.yaml';
+    $configYamlFile = isset($param['c'])? $param['c']: __DIR__. '/config.yaml';
     $container->get(ConfigReader::class)
         ->setConfigByYaml($configYamlFile)
         ->checkConfig();

@@ -20,7 +20,7 @@ try {
     $container = Container::instance();
 
     # config
-    $configYamlFile = isset($param['c'])? $param['c']: './config.yaml';
+    $configYamlFile = isset($param['c'])? $param['c']: __DIR__. '/config.yaml';
     $container->get(ConfigReader::class)
         ->setConfigByYaml($configYamlFile)
         ->checkConfig();
@@ -31,7 +31,7 @@ try {
         ->setName('multi-process')
         ->setHandlers([
             (new StreamHandler('php://stdout'))->setFormatter($logFormatter),
-            (new StreamHandler('/logs/run.log'))->setFormatter($logFormatter),
+            (new StreamHandler('/tmp/multi_process_run.log'))->setFormatter($logFormatter),
         ])
         ->setTimezone(new \DateTimeZone('Asia/Shanghai'));
 
