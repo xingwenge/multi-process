@@ -16,7 +16,7 @@ class Worker
     /** @var array bin args */
     private $binArgs;
 
-    /** @var int process id */
+    /** @var int|string process id */
     private $pid;
 
     /** @var Process process obj */
@@ -46,6 +46,7 @@ class Worker
     public function setName(string $name)
     {
         $this->name = $name;
+        $this->pid = md5($name);
     }
 
     /**
@@ -118,9 +119,9 @@ class Worker
     }
 
     /**
-     * @return int
+     * @return int|string
      */
-    public function getPid(): int
+    public function getPid()
     {
         return $this->pid;
     }
@@ -166,10 +167,11 @@ class Worker
             }
         });
 
+        $oldPid = $this->pid;
         $this->pid = $this->process->start();
         $this->startTime = microtime(true);
 
-        Container::instance()->get(WorkerList::class)->updateWorker($this);
+        Container::instance()->get(WorkerList::class)->updateWorker($this, $oldPid);
 
         $this->logger->info('Worker start', [
             'pid' => $this->pid,

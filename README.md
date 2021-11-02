@@ -75,13 +75,13 @@ programs:
 ```
 
 启动
-```./bin/multiprocessd -c ./bin/demo.yaml```
+```./bin/multiprocessd -c ./bin/config.yaml```
 
 平滑结束
-```./bin/multiprocessctl -c ./bin/demo.yaml -s quit```
+```./bin/multiprocessctl -c ./bin/config.yaml -s quit```
 
 停止
-```./bin/multiprocessctl -c ./bin/demo.yaml -s stop```
+```./bin/multiprocessctl -c ./bin/config.yaml -s stop```
 
 
 
