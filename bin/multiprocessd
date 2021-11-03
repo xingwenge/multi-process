@@ -31,7 +31,7 @@ try {
         ->setName('multi-process')
         ->setHandlers([
             (new StreamHandler('php://stdout'))->setFormatter($logFormatter),
-            (new StreamHandler('/tmp/multi_process_run.log'))->setFormatter($logFormatter),
+            (new StreamHandler('/tmp/multi_process_run.log'))->setFormatter($logFormatter), // 日志记录到文件
         ])
         ->setTimezone(new \DateTimeZone('Asia/Shanghai'));
 
