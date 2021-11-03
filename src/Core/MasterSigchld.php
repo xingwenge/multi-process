@@ -24,29 +24,19 @@ class MasterSigchld
 
     public function deal()
     {
-        while (true) {
-            try {
-                # wait worker signal
-                $ret = Process::wait(false);
-                // {pid:123,code:0,signal:0}  exit normally.
-                // false
-                // {"pid":298,"code":255,"signal":0}  worker process program Fatal error.
+        while ($ret = Process::wait(false)) {
+            // {pid:123,code:0,signal:0}  exit normally.
+            // {"pid":298,"code":255,"signal":0}  worker process program Fatal error.
 
-                if ($ret) {
-                    $this->logger->info('Worker signal', $ret);
+            $this->logger->info('Worker signal', $ret);
 
-                    if (isset($ret['pid'])) {
-                        if ($ret['code']==0) {
-                            $this->startWorker($ret['pid']);
-                        }
-                    }
-                }
-
-            } catch (\Exception $e) {
-                $this->logger->error('Deal worker exit error.', [$e->getMessage()]);
+            if ($ret['pid'] && $ret['code']==0) {
+                $this->startWorker($ret['pid']);
             }
-
-            break;
+            else {
+                $this->logger->error('Deal worker exit error.', $ret);
+                break;
+            }
         }
     }
 
@@ -55,6 +45,7 @@ class MasterSigchld
         $worker = $this->workerList->getWorkerByPid($pid);
 
         if (!$worker) {
+            $this->logger->error('Can not find worker.', [$pid, $this->workerList]);
             return;
         }
 
