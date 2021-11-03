@@ -31,7 +31,7 @@ class MasterSigchld
             $this->logger->info('Worker signal', $ret);
 
             if ($ret['pid'] && $ret['code']==0) {
-                $this->startWorker($ret['pid']);
+                $this->restartWorker($ret['pid']);
             }
             else {
                 $this->logger->error('Deal worker exit error.', $ret);
@@ -40,14 +40,16 @@ class MasterSigchld
         }
     }
 
-    private function startWorker($pid)
+    private function restartWorker($oldPid)
     {
-        $worker = $this->workerList->getWorkerByPid($pid);
+        $worker = $this->workerList->getWorkerByPid($oldPid);
 
         if (!$worker) {
-            $this->logger->error('Can not find worker.', [$pid, $this->workerList]);
+            $this->logger->error('Can not find worker.', [$oldPid, $this->workerList]);
             return;
         }
+
+        $this->logger->info('Worker signal info.', ['pid' => $oldPid, 'name' => $worker->getName()]);
 
         $timeDiff = microtime(true) - $worker->getStartTime();
         if ($timeDiff < $worker->getStartSecs()) {

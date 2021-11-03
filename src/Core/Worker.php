@@ -176,6 +176,7 @@ class Worker
         $this->logger->info('Worker start', [
             'pid' => $this->pid,
             'name' => $this->name,
+            'cmd' => sprintf('%s %s', $this->bin, implode(' ', $this->binArgs)),
         ]);
     }
 }
