@@ -86,13 +86,18 @@ class Master
         # worker list.
         $config = $this->config->getPrograms();
         foreach ($config as $k=>$v) {
+            $bin = $v['bin']? $v['bin']: [];
+            $binArgs = $v['binArgs']? $v['binArgs']: [];
+            $startSecs = $v['startSecs']? $v['startSecs']: 3;
+            $startRetries = $v['startRetries']? $v['startRetries']: 3;
+
             $worker = new Worker();
             $worker->setName($k);
-            $worker->setBin($v['bin']??'');
-            $worker->setBinArgs($v['binArgs']??[]);
+            $worker->setBin($bin);
+            $worker->setBinArgs($binArgs);
             $worker->setLogger($this->logger);
-            $worker->setStartSecs($v['startSecs']);
-            $worker->setStartRetries($v['startRetries']);
+            $worker->setStartSecs($startSecs);
+            $worker->setStartRetries($startRetries);
             $this->workerList->addWorker($worker);
         }
         $this->workerList->checkWorkerList();
